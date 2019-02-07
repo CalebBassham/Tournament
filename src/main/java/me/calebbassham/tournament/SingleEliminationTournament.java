@@ -64,6 +64,7 @@ public class SingleEliminationTournament extends Tournament {
         }
     }
 
+    @Override
     public TournamentMatch getNextMatch() {
         ArrayList<TournamentMatch> matches = getMatches();
 
@@ -105,6 +106,7 @@ public class SingleEliminationTournament extends Tournament {
         return matches;
     }
 
+    @Override
     public TournamentTeam getWinner() {
         return masterMatch.getWinner();
     }

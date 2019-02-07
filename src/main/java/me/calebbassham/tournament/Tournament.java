@@ -13,11 +13,11 @@ import java.util.stream.Collectors;
 import static me.calebbassham.pluginmessageformat.PluginMessageFormat.getMainColorPallet;
 import static me.calebbassham.pluginmessageformat.PluginMessageFormat.getPrefix;
 
-public class Tournament {
+public abstract class Tournament {
 
     private static HashSet<Arena> arenas = new HashSet<>();
     private static HashMap<String, Kit> kits = new HashMap<>();
-    private static SingleEliminationTournament tournament;
+    private static Tournament tournament;
     private static BukkitTask matchScheduler;
 
     private static Location spawnLocation;
@@ -27,7 +27,7 @@ public class Tournament {
         return arenas.stream().filter(Arena::isAvailable).findAny().orElse(null);
     }
 
-    public static SingleEliminationTournament getTournament() {
+    public static Tournament getTournament() {
         return tournament;
     }
 
@@ -159,6 +159,8 @@ public class Tournament {
     }
 
     private final Kit kit;
+    private TournamentTeam winner;
+    private TournamentTeam loser;
 
     public Tournament(Kit kit) {
         this.kit = kit;
@@ -171,4 +173,8 @@ public class Tournament {
     public Kit getKit() {
         return kit;
     }
+
+    public abstract TournamentTeam getWinner();
+
+    public abstract TournamentMatch getNextMatch();
 }
