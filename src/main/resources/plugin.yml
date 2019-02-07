@@ -1,0 +1,12 @@
+name: Tournament
+description: Automatically hosts tournaments.
+version: 1.0.0-SNAPSHOT
+author: Caleb Bassham
+depend: [PluginMessageFormat]
+main: me.calebbassham.tournament.TournamentPlugin
+
+commands:
+  tournament:
+    permission: tournament.*
+    aliases: [tourney, tourn]
+    usage: /<command> start <kit>

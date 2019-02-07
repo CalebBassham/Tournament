@@ -1,0 +1,49 @@
+spawn_location:
+  world: world
+  x: 0
+  y: 0
+  z: 0
+  yaw: 0
+  pitch: 0
+
+spectator_spawn_location:
+  world: world
+  x: 0
+  y: 0
+  z: 0
+  yaw: 0
+  pitch: 0
+
+arenas:
+  1:
+    world: world
+    team_1_spawn_location:
+      x: 0
+      y: 0
+      z: 0
+      yaw: 0
+      pitch: 0
+    team_2_spawn_location:
+      x: 0
+      y: 0
+      z: 0
+      yaw: 0
+      pitch: 0
+
+kits:
+  Iron:
+    inventory:
+      0:
+        material: IRON_SWORD
+        enchantments:
+          DAMAGE_ALL: 1
+    armor:
+      helmet:
+        material: IRON_HELMET
+      chestplate:
+        material: IRON_CHESTPLATE
+      leggings:
+        material: IRON_LEGGINGS
+      boots:
+        material: IRON_BOOTS
+
