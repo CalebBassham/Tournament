@@ -8,6 +8,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -156,10 +158,26 @@ public abstract class Tournament {
             }
         }
 
+        setupHealthScoreboard();
+
         tournamentRunner = new TournamentRunner(tournament);
         Bukkit.getPluginManager().registerEvents(tournamentRunner, TournamentPlugin.instance);
 
         matchScheduler = new MatchScheduler().runTaskTimer(TournamentPlugin.instance, 20, 60/*TODO*/ * 20);
+    }
+
+    private static void setupHealthScoreboard() {
+        Objective obj = Bukkit.getScoreboardManager().getMainScoreboard().registerNewObjective("tournamentHealth", "health");
+        for(Player player : Bukkit.getOnlinePlayers()) {
+            obj.getScore(player.getName()).setScore((int) player.getHealth());
+        }
+        obj.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+    }
+
+    private static void removeHealthScoreboard() {
+        Objective objective = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("tournamentHealth");
+        if (objective == null) return;
+        objective.unregister();
     }
 
     static void stop() {
@@ -168,6 +186,8 @@ public abstract class Tournament {
                 getMainColorPallet().getPrimaryTextColor() + ". The " + getMainColorPallet().getHighlightTextColor() + "winner" +
                 getMainColorPallet().getPrimaryTextColor() + " is " + getMainColorPallet().getValueTextColor() + "%s" +
                 getMainColorPallet().getPrimaryTextColor() + ".", tournament.getWinner().getName()));
+
+        removeHealthScoreboard();
 
         HandlerList.unregisterAll(tournamentRunner);
 
