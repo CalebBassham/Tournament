@@ -1,6 +1,10 @@
 package me.calebbassham.tournament;
 
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.scoreboard.Team;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;

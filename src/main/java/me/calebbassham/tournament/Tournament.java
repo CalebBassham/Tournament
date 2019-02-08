@@ -1,15 +1,13 @@
 package me.calebbassham.tournament;
 
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Team;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -141,7 +139,13 @@ public abstract class Tournament {
         List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
         Collections.shuffle(players);
 
-        tournament = new SingleEliminationTournament(players.stream().map(player -> new TournamentTeam(player.getUniqueId(), player.getName())).collect(Collectors.toCollection(ArrayDeque::new)), kit);
+        ArrayDeque<TournamentTeam> teams = players.stream()
+                .map(player -> new TournamentTeam(player.getUniqueId(), player.getName()))
+                .collect(Collectors.toCollection(ArrayDeque::new));
+
+        setupTeams(teams.clone());
+
+        tournament = new SingleEliminationTournament(teams, kit);
 
         Bukkit.broadcastMessage(getPrefix() + getMainColorPallet().getHighlightTextColor() + "Tournament" + getMainColorPallet().getPrimaryTextColor() +
                 " is " + getMainColorPallet().getValueTextColor() + "starting now" + getMainColorPallet().getPrimaryTextColor() + ".");
@@ -166,6 +170,29 @@ public abstract class Tournament {
         matchScheduler = new MatchScheduler().runTaskTimer(TournamentPlugin.instance, 20, 2 * 20);
     }
 
+    private static void setupTeams(ArrayDeque<TournamentTeam> teams) {
+        removeTeams();
+
+        int i = 1;
+        while (!teams.isEmpty()) {
+            TournamentTeam tournamentTeam = teams.poll();
+            Team team = Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam("tournament" + i);
+            team.setPrefix(Util.randElement(ChatColor.values()).toString()); // TODO fix for 1.13
+
+            Arrays.stream(tournamentTeam.getPlayers())
+                    .map(Bukkit::getOfflinePlayer)
+                    .forEach(offlinePlayer -> team.addEntry(offlinePlayer.getName()));
+
+            i++;
+        }
+    }
+
+    private static void removeTeams() {
+        Bukkit.getScoreboardManager().getMainScoreboard().getTeams().stream()
+                .filter(team -> team.getName().startsWith("tournament"))
+                .forEach(Team::unregister);
+    }
+
     private static void setupHealthScoreboard() {
         Objective obj = Bukkit.getScoreboardManager().getMainScoreboard().registerNewObjective("tournamentHealth", "health");
         for(Player player : Bukkit.getOnlinePlayers()) {
@@ -188,6 +215,7 @@ public abstract class Tournament {
                 getMainColorPallet().getPrimaryTextColor() + ".", tournament.getWinner().getName()));
 
         removeHealthScoreboard();
+        removeTeams();
 
         HandlerList.unregisterAll(tournamentRunner);
 
