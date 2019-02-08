@@ -3,12 +3,16 @@ package me.calebbassham.tournament;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class TournamentRunner implements Listener {
 
@@ -44,6 +48,22 @@ public class TournamentRunner implements Listener {
         } else if (location.getBlockZ() < -405 || location.getBlockZ() > -307) {
             e.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void arrowHealth(ProjectileHitEvent e) {
+        final Projectile entity = e.getEntity();
+        if (entity.getWorld() != Tournament.getSpectatorSpawnLocation().getWorld()) return;
+
+        Entity shooter = (Entity) entity.getShooter();
+        if (!tournament.isInMatch(shooter.getUniqueId())) return;
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                entity.remove();
+            }
+        }.runTaskLater(TournamentPlugin.instance, 20 * 20);
     }
 
 }
