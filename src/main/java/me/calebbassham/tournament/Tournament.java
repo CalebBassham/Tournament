@@ -1,10 +1,12 @@
 package me.calebbassham.tournament;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
@@ -19,6 +21,7 @@ public abstract class Tournament {
     private static HashMap<String, Kit> kits = new HashMap<>();
     private static Tournament tournament;
     private static BukkitTask matchScheduler;
+    private static TournamentRunner tournamentRunner;
 
     private static Location spawnLocation;
     private static Location spectatorSpawnLocation;
@@ -141,9 +144,22 @@ public abstract class Tournament {
         Bukkit.broadcastMessage(getPrefix() + getMainColorPallet().getHighlightTextColor() + "Tournament" + getMainColorPallet().getPrimaryTextColor() +
                 " is " + getMainColorPallet().getValueTextColor() + "starting now" + getMainColorPallet().getPrimaryTextColor() + ".");
         Bukkit.getOnlinePlayers()
-                .forEach(player -> player.teleport(getSpectatorSpawnLocation()));
+                .forEach(player -> {
+                    player.teleport(getSpectatorSpawnLocation());
+                    player.setGameMode(GameMode.SPECTATOR);
+                });
 
-        matchScheduler = new MatchScheduler().runTaskTimer(TournamentPlugin.instance, 20, 3 * 20);
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            for (Player hide : Bukkit.getOnlinePlayers()) {
+                if (hide == player) continue;
+                player.hidePlayer(hide);
+            }
+        }
+
+        tournamentRunner = new TournamentRunner(tournament);
+        Bukkit.getPluginManager().registerEvents(tournamentRunner, TournamentPlugin.instance);
+
+        matchScheduler = new MatchScheduler().runTaskTimer(TournamentPlugin.instance, 20, 60/*TODO*/ * 20);
     }
 
     static void stop() {
@@ -152,10 +168,20 @@ public abstract class Tournament {
                 getMainColorPallet().getPrimaryTextColor() + ". The " + getMainColorPallet().getHighlightTextColor() + "winner" +
                 getMainColorPallet().getPrimaryTextColor() + " is " + getMainColorPallet().getValueTextColor() + "%s" +
                 getMainColorPallet().getPrimaryTextColor() + ".", tournament.getWinner().getName()));
+
+        HandlerList.unregisterAll(tournamentRunner);
+
         tournament = null;
+        tournamentRunner = null;
+
         Bukkit.getOnlinePlayers()
-                .forEach(player -> player.teleport(getSpawnLocation()));
+                .forEach(player -> {
+                    player.setGameMode(GameMode.ADVENTURE);
+                    player.teleport(getSpawnLocation());
+                });
+
         matchScheduler.cancel();
+        matchScheduler = null;
     }
 
     private final Kit kit;
@@ -177,4 +203,6 @@ public abstract class Tournament {
     public abstract TournamentTeam getWinner();
 
     public abstract TournamentMatch getNextMatch();
+
+    public abstract boolean isInMatch(UUID player);
 }

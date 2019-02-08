@@ -67,9 +67,16 @@ public class MatchRunner implements Listener {
 
         Arrays.stream(getParticipants())
                 .forEach(player -> {
+                    player.setGameMode(GameMode.ADVENTURE);
                     resetPlayer(player);
                     Tournament.getTournament().getKit().equipPlayer(player);
                 });
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            for (Player participant : getParticipants()) {
+                player.showPlayer(participant);
+            }
+        }
 
         Bukkit.broadcastMessage(getPrefix() + getMainColorPallet().getHighlightTextColor() + "Round " + getMainColorPallet().getValueTextColor() +
                 match.getRound() + getMainColorPallet().getHighlightTextColor() + " Match " + getMainColorPallet().getValueTextColor() + match.getMatch() +
@@ -112,15 +119,23 @@ public class MatchRunner implements Listener {
         Arrays.stream(getParticipants())
                 .forEach(player -> {
                     resetPlayer(player);
+                    player.setGameMode(GameMode.SPECTATOR);
                     player.teleport(Tournament.getSpectatorSpawnLocation());
                 });
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            for (Player participant : getParticipants()) {
+                player.hidePlayer(participant);
+            }
+        }
+
         cleanup();
     }
 
     private void resetPlayer(Player player) {
-        player.setGameMode(GameMode.ADVENTURE);
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);
+        player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
         player.resetMaxHealth();
         player.setHealth(player.getMaxHealth());
         player.setFoodLevel(20);

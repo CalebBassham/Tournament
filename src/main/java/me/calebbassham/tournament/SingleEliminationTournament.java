@@ -111,6 +111,7 @@ public class SingleEliminationTournament extends Tournament {
         return masterMatch.getWinner();
     }
 
+    @Override
     public boolean isInMatch(UUID player) {
         return getMatches().stream()
                 .filter(TournamentMatch::isInProgress)
