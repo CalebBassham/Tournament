@@ -163,7 +163,7 @@ public abstract class Tournament {
         tournamentRunner = new TournamentRunner(tournament);
         Bukkit.getPluginManager().registerEvents(tournamentRunner, TournamentPlugin.instance);
 
-        matchScheduler = new MatchScheduler().runTaskTimer(TournamentPlugin.instance, 20, 60/*TODO*/ * 20);
+        matchScheduler = new MatchScheduler().runTaskTimer(TournamentPlugin.instance, 20, 2 * 20);
     }
 
     private static void setupHealthScoreboard() {
