@@ -1,18 +1,26 @@
 package me.calebbassham.tournament;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.text.DecimalFormat;
+
+import static me.calebbassham.pluginmessageformat.PluginMessageFormat.getMainColorPallet;
+import static me.calebbassham.pluginmessageformat.PluginMessageFormat.getPrefix;
 
 public class TournamentRunner implements Listener {
 
@@ -51,7 +59,7 @@ public class TournamentRunner implements Listener {
     }
 
     @EventHandler
-    public void arrowHealth(ProjectileHitEvent e) {
+    public void removeArrows(ProjectileHitEvent e) {
         final Projectile entity = e.getEntity();
         if (entity.getWorld() != Tournament.getSpectatorSpawnLocation().getWorld()) return;
 
@@ -64,6 +72,29 @@ public class TournamentRunner implements Listener {
                 entity.remove();
             }
         }.runTaskLater(TournamentPlugin.instance, 20 * 20);
+    }
+
+    @EventHandler
+    public void arrowHealth(EntityDamageByEntityEvent e) {
+        if (!(e.getDamager() instanceof Arrow)) return;
+        Projectile arrow = (Arrow) e.getDamager();
+
+        if (!(arrow.getShooter() instanceof Player)) return;
+        Player shooter = (Player) arrow.getShooter();
+
+        if (!(e.getEntity() instanceof Player)) return;
+        Player victim = (Player) e.getEntity();
+
+        if (!tournament.isInMatch(shooter.getUniqueId()) || !tournament.isInMatch(victim.getUniqueId())) return;
+
+        double health = Math.max(0, (victim.getHealth() - e.getFinalDamage()) / 2);
+
+        shooter.sendMessage(getPrefix() + getMainColorPallet().getHighlightTextColor() + victim.getDisplayName() + getMainColorPallet().getPrimaryTextColor() +
+                " is now at " + getMainColorPallet().getValueTextColor() +
+                new DecimalFormat("#.#").format(health) + ChatColor.RED + "♥" +
+                getMainColorPallet().getExtraTextColor() + " (" + getMainColorPallet().getValueTextColor() +
+                DecimalFormat.getPercentInstance().format(health/victim.getMaxHealth()) + getMainColorPallet().getExtraTextColor() +
+                ")" + getMainColorPallet().getPrimaryTextColor() + ".");
     }
 
 }
