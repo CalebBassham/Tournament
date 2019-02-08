@@ -1,7 +1,10 @@
 package me.calebbassham.tournament;
 
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class SingleEliminationTournament extends Tournament {

@@ -9,7 +9,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.util.Vector;
 
 public class TournamentRunner implements Listener {
 
@@ -24,7 +23,7 @@ public class TournamentRunner implements Listener {
         e.getPlayer().setGameMode(GameMode.SPECTATOR);
         e.getPlayer().teleport(Tournament.getSpectatorSpawnLocation());
 
-        for(Player player : Bukkit.getOnlinePlayers()) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             player.hidePlayer(e.getPlayer());
         }
     }

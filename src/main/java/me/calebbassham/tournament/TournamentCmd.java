@@ -1,7 +1,6 @@
 package me.calebbassham.tournament;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -84,12 +83,12 @@ public class TournamentCmd implements CommandExecutor, TabCompleter {
             if (args[0].equalsIgnoreCase("config")) {
                 if (args[1].equalsIgnoreCase("arenas")) {
                     if (!args[3].equalsIgnoreCase("team_1_spawn_location") && !args[3].equalsIgnoreCase("team_2_spawn_location"))
-                    if (!(sender instanceof Player)) {
-                        sender.sendMessage(getErrorPrefix() + "Only players can use this command.");
-                        return true;
-                    }
+                        if (!(sender instanceof Player)) {
+                            sender.sendMessage(getErrorPrefix() + "Only players can use this command.");
+                            return true;
+                        }
 
-                    if(!TournamentPlugin.instance.getConfig().isConfigurationSection("arenas")) {
+                    if (!TournamentPlugin.instance.getConfig().isConfigurationSection("arenas")) {
                         TournamentPlugin.instance.getConfig().createSection("arenas").createSection(args[2]);
                     }
 

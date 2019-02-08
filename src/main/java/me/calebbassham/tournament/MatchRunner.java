@@ -112,8 +112,8 @@ public class MatchRunner implements Listener {
     private void stop() {
         Bukkit.broadcastMessage(getPrefix() + getMainColorPallet().getHighlightTextColor() + "Round " + getMainColorPallet().getValueTextColor() +
                 match.getRound() + getMainColorPallet().getHighlightTextColor() + " Match " + getMainColorPallet().getValueTextColor() + match.getMatch() +
-                getMainColorPallet().getExtraTextColor() + " – " + getMainColorPallet().getValueTextColor() + match.getWinner().getName() +  getMainColorPallet().getPrimaryTextColor()
-                + " has " + getMainColorPallet().getHighlightTextColor() +  "defeated " + getMainColorPallet().getValueTextColor() + match.getLoser().getName() +
+                getMainColorPallet().getExtraTextColor() + " – " + getMainColorPallet().getValueTextColor() + match.getWinner().getName() + getMainColorPallet().getPrimaryTextColor()
+                + " has " + getMainColorPallet().getHighlightTextColor() + "defeated " + getMainColorPallet().getValueTextColor() + match.getLoser().getName() +
                 getMainColorPallet().getPrimaryTextColor() + ".");
 
         Arrays.stream(getParticipants())

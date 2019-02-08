@@ -30,7 +30,7 @@ class ConfigKit implements Kit {
     public void equipPlayer(Player player) {
         PlayerInventory inv = player.getInventory();
 
-        for(int slot : items.keySet()) {
+        for (int slot : items.keySet()) {
             inv.setItem(slot, items.get(slot));
         }
 
