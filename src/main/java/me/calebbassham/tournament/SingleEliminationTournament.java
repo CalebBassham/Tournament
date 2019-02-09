@@ -33,7 +33,7 @@ public class SingleEliminationTournament extends Tournament {
                     tournamentMatch = new TournamentMatch(round, match, teams.poll(), teams.poll(), null, null);
                 } else {
                     TournamentMatch child1 = prevRound.poll();
-                    TournamentMatch child2 = prevRound.poll();
+                    TournamentMatch child2 = prevRound.pollLast();
                     tournamentMatch = new TournamentMatch(round, match, null, null, child1, child2);
                     child1.setParent(tournamentMatch);
                     child2.setParent(tournamentMatch);
