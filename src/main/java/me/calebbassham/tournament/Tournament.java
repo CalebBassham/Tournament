@@ -131,7 +131,7 @@ public abstract class Tournament {
         return (HashMap<String, Kit>) kits.clone();
     }
 
-    static void start(Kit kit) throws IllegalStateException {
+    static void start(Type type, Kit kit) throws IllegalStateException {
         if (tournament != null) {
             throw new IllegalStateException("A tournament is already running.");
         }
@@ -145,7 +145,14 @@ public abstract class Tournament {
 
         setupTeams(teams.clone());
 
-        tournament = new SingleEliminationTournament(teams, kit);
+        switch (type) {
+            case SINGLE_ELIMINATION:
+                tournament = new SingleEliminationTournament(teams, kit);
+                break;
+            case ROUND_ROBIN:
+                tournament = new RoundRobinTournament(teams, kit);
+                break;
+        }
 
         Bukkit.broadcastMessage(getPrefix() + getMainColorPallet().getHighlightTextColor() + "Tournament" + getMainColorPallet().getPrimaryTextColor() +
                 " is " + getMainColorPallet().getValueTextColor() + "starting now" + getMainColorPallet().getPrimaryTextColor() + ".");
@@ -194,6 +201,7 @@ public abstract class Tournament {
     }
 
     private static void setupHealthScoreboard() {
+        removeHealthScoreboard();
         Objective obj = Bukkit.getScoreboardManager().getMainScoreboard().registerNewObjective("tournamentHealth", "health");
         for(Player player : Bukkit.getOnlinePlayers()) {
             obj.getScore(player.getName()).setScore((int) player.getHealth());
@@ -228,8 +236,19 @@ public abstract class Tournament {
                     player.teleport(getSpawnLocation());
                 });
 
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            for (Player show : Bukkit.getOnlinePlayers()) {
+                player.showPlayer(show);
+            }
+        }
+
         matchScheduler.cancel();
         matchScheduler = null;
+    }
+
+    enum Type {
+        SINGLE_ELIMINATION,
+        ROUND_ROBIN
     }
 
     private final Kit kit;

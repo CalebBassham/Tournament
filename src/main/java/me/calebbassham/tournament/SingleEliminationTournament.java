@@ -1,10 +1,6 @@
 package me.calebbassham.tournament;
 
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.scoreboard.Team;
-
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class SingleEliminationTournament extends Tournament {
 
-    private TournamentMatch masterMatch;
+    private TreeTournamentMatch masterMatch;
     private final int rounds;
 
     public SingleEliminationTournament(ArrayDeque<TournamentTeam> teams, Kit kit) {
@@ -22,19 +18,19 @@ public class SingleEliminationTournament extends Tournament {
 
         rounds = (int) Util.log2(teams.size());
 
-        ArrayDeque<TournamentMatch> prevRound = new ArrayDeque<>();
-        ArrayDeque<TournamentMatch> currentRound = new ArrayDeque<>();
+        ArrayDeque<TreeTournamentMatch> prevRound = new ArrayDeque<>();
+        ArrayDeque<TreeTournamentMatch> currentRound = new ArrayDeque<>();
         for (int round = 1; round <= rounds; round++) {
             int matches = (int) Math.pow(2, rounds - round + 1);
             for (int match = 1; match <= matches / 2; match++) {
-                TournamentMatch tournamentMatch;
+                TreeTournamentMatch tournamentMatch;
 
                 if (prevRound.isEmpty()) {
-                    tournamentMatch = new TournamentMatch(round, match, teams.poll(), teams.poll(), null, null);
+                    tournamentMatch = new TreeTournamentMatch(round, match, teams.poll(), teams.poll(), null, null);
                 } else {
-                    TournamentMatch child1 = prevRound.poll();
-                    TournamentMatch child2 = prevRound.pollLast();
-                    tournamentMatch = new TournamentMatch(round, match, null, null, child1, child2);
+                    TreeTournamentMatch child1 = prevRound.poll();
+                    TreeTournamentMatch child2 = prevRound.pollLast();
+                    tournamentMatch = new TreeTournamentMatch(round, match, null, null, child1, child2);
                     child1.setParent(tournamentMatch);
                     child2.setParent(tournamentMatch);
                 }
@@ -72,12 +68,12 @@ public class SingleEliminationTournament extends Tournament {
     }
 
     @Override
-    public TournamentMatch getNextMatch() {
-        ArrayList<TournamentMatch> matches = getMatches();
+    public TreeTournamentMatch getNextMatch() {
+        ArrayList<TreeTournamentMatch> matches = getMatches();
 
         for (int round = 1; round <= rounds; round++) {
             final int r = round;
-            TournamentMatch match = matches.stream()
+            TreeTournamentMatch match = matches.stream()
                     .filter(m -> m.getRound() == r)
                     .filter(m -> m.getWinner() == null)
                     .filter(m -> !m.isInProgress())
@@ -91,15 +87,15 @@ public class SingleEliminationTournament extends Tournament {
         return null;
     }
 
-    public ArrayList<TournamentMatch> getMatches() {
+    public ArrayList<TreeTournamentMatch> getMatches() {
         return getMatches(masterMatch);
     }
 
-    private ArrayList<TournamentMatch> getMatches(TournamentMatch match) {
+    private ArrayList<TreeTournamentMatch> getMatches(TreeTournamentMatch match) {
         return getMatches(match, new ArrayList<>());
     }
 
-    private ArrayList<TournamentMatch> getMatches(TournamentMatch match, ArrayList<TournamentMatch> matches) {
+    private ArrayList<TreeTournamentMatch> getMatches(TreeTournamentMatch match, ArrayList<TreeTournamentMatch> matches) {
         matches.add(match);
 
         if (match.getChild1() != null) {
@@ -121,8 +117,8 @@ public class SingleEliminationTournament extends Tournament {
     @Override
     public boolean isInMatch(UUID player) {
         return getMatches().stream()
-                .filter(TournamentMatch::isInProgress)
-                .map(TournamentMatch::getParticipants)
+                .filter(TreeTournamentMatch::isInProgress)
+                .map(TreeTournamentMatch::getParticipants)
                 .flatMap(Arrays::stream)
                 .collect(Collectors.toList())
                 .contains(player);

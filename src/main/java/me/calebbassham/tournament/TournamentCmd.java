@@ -10,6 +10,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -20,15 +21,26 @@ public class TournamentCmd implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length == 2) {
+        if (args.length == 3) {
             if (args[0].equalsIgnoreCase("start")) {
-                Kit kit = Tournament.getKit(args[1]);
+                Tournament.Type type;
+                try {
+                    type = Tournament.Type.valueOf(args[1].toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    sender.sendMessage(getErrorPrefix() + "The tournament type " + getErrorColorPallet().getValueTextColor() +
+                            args[1].toUpperCase() + getErrorColorPallet().getPrimaryTextColor() + " is " + getErrorColorPallet().getHighlightTextColor() +
+                            "invalid" + getErrorColorPallet().getPrimaryTextColor() + ".");
+                    return true;
+                }
+
+                Kit kit = Tournament.getKit(args[2]);
                 if (kit == null) {
                     sender.sendMessage(getErrorPrefix() + "The kit " + getErrorColorPallet().getValueTextColor() + args[1] +
                             getErrorColorPallet().getPrimaryTextColor() + " does not exist.");
                     return true;
                 }
-                Tournament.start(kit);
+
+                Tournament.start(type, kit);
                 return true;
             }
 
@@ -130,23 +142,40 @@ public class TournamentCmd implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return Stream.of("config", "start").filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
+            return Stream.of("config", "start")
+                    .filter(s -> s.startsWith(args[0]))
+                    .collect(Collectors.toList());
         }
 
         if (args.length == 2) {
             if (args[0].equalsIgnoreCase("start")) {
-                return new ArrayList<>(Tournament.getKits().keySet());
+                return Arrays.stream(Tournament.Type.values())
+                        .map(Enum::name)
+                        .filter(s -> s.startsWith(args[1]))
+                        .collect(Collectors.toList());
             }
 
             if (args[0].equalsIgnoreCase("config")) {
-                return Stream.of("arenas", "spectator_spawn_location", "spawn_location").filter(s -> s.startsWith(args[1])).collect(Collectors.toList());
+                return Stream.of("arenas", "spectator_spawn_location", "spawn_location")
+                        .filter(s -> s.startsWith(args[1]))
+                        .collect(Collectors.toList());
+            }
+        }
+
+        if (args.length == 3) {
+            if (args[0].equalsIgnoreCase("start")) {
+                return Tournament.getKits().keySet().stream()
+                        .filter(s -> s.startsWith(args[2]))
+                        .collect(Collectors.toList());
             }
         }
 
         if (args.length == 4) {
             if (args[0].equalsIgnoreCase("config")) {
                 if (args[1].equalsIgnoreCase("arenas")) {
-                    return Stream.of("team_1_spawn_location", "team_2_spawn_location").filter(s -> s.startsWith(args[3])).collect(Collectors.toList());
+                    return Stream.of("team_1_spawn_location", "team_2_spawn_location")
+                            .filter(s -> s.startsWith(args[3]))
+                            .collect(Collectors.toList());
                 }
             }
         }
