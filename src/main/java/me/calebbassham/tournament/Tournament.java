@@ -252,8 +252,6 @@ public abstract class Tournament {
     }
 
     private final Kit kit;
-    private TournamentTeam winner;
-    private TournamentTeam loser;
 
     public Tournament(Kit kit) {
         this.kit = kit;
