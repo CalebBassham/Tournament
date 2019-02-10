@@ -89,6 +89,7 @@ public class RoundRobinTournament extends Tournament {
             HashMap<Integer, TournamentMatch> roundMap = rounds.get(round);
             for (int match = 1; match <= matchesInRound; match++) {
                 TournamentMatch tournamentMatch = roundMap.get(match);
+                if (Arrays.stream(tournamentMatch.getParticipants()).anyMatch(this::isInMatch)) continue;
                 if (tournamentMatch.isInProgress()) continue;
                 if (tournamentMatch.getWinner() == null) return tournamentMatch;
             }
