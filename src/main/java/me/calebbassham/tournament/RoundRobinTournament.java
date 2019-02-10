@@ -59,7 +59,7 @@ public class RoundRobinTournament extends Tournament {
 
     @Override
     public TournamentTeam getWinner() {
-        if (rounds.get(totalRounds).get(matchesInRound).getWinner() == null) return null;
+        if (getMatches().stream().anyMatch(match -> match.getWinner() == null)) return null;
 
         HashMap<TournamentTeam, Integer> wins = new HashMap<>();
 
@@ -118,7 +118,5 @@ public class RoundRobinTournament extends Tournament {
         }
         return matches;
     }
-
-
 
 }
