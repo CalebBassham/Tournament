@@ -52,20 +52,20 @@ Use the command `/tournament config arenas <arena_name> <team_1_spawn_location|t
 
 ```yml
 arenas:
-	'1':
-		world: spawn
-		team_1_spawn_location:
-		  x: -1544
-		  y: 70
-		  z: -357
-		  yaw: 224
-		  pitch: -1
-		team_2_spawn_location:
-		  x: -1496
-		  y: 71
-		  z: -405
-		  yaw: 44
-		  pitch: 0
+  '1':
+    world: spawn
+    team_1_spawn_location:
+      x: -1544
+      y: 70
+      z: -357
+      yaw: 224
+      pitch: -1
+    team_2_spawn_location:
+      x: -1496
+      y: 71
+      z: -405
+      yaw: 44
+      pitch: 0
 ```
 
 Make sure to change the world and coordinates to adjust for your arena. Make sure that each arena has a unique name; in this case, the name of the arena is `1`.
